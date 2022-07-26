@@ -3,11 +3,6 @@ layout: shell.hbs
 title: Chrome DevTools Protocol
 version: tot
 ---
-<a href="https://github.com/ChromeDevTools/debugger-protocol-viewer" class="gh-badge"><img
-  style=""
-  src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67"
-  alt="Fork me on GitHub"
-  data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
 
 <p>The <b>Chrome DevTools Protocol</b> allows for tools to instrument, inspect, debug and profile Chromium, Chrome and other Blink-based browsers.
 Many existing projects <a href="https://github.com/ChromeDevTools/awesome-chrome-devtools">currently use</a> the protocol.
@@ -96,19 +91,23 @@ You can view all requests/responses and methods as they happen.
 
 <figure class="screenshot">
   <a href="images/protocol-monitor.png" target="_blank" style="text-align: center; display:block;">
-    <img src="images/protocol-monitor.png" height="260" alt="Screenshot of the Protocol Monitor" loading="lazy">
+    <img src="images/protocol-monitor.png" height="300" alt="Screenshot of the Protocol Monitor" loading="lazy">
   </a>
 </figure>
 
-<p>To use, first <a href="https://stackoverflow.com/a/15680012/89484">enable DevTools experiments</a>.
-Then click the ⋮ menu icon in the top-right of the DevTools, and select <i>Settings</i>.
+Click the gear icon in the top-right of the DevTools to open the <i>Settings</i> panel.
 Select <i>Experiments</i> on the left of settings. Turn on "Protocol Monitor", then close and reopen DevTools.
-Now click the ⋮ menu icon again, choose <i>More Tools</i> and then select <i>Protocol monitor</i>.
+Now click the ⋮ menu icon, choose <i>More Tools</i> and then select <i>Protocol monitor</i>.
 
-<p>You can also issue your own commands. First, <a href="https://stackoverflow.com/a/12291163/89484">open devtools-on-devtools</a>,
+<p>You can also issue your own commands using Protocol Monitor (verion 92.0.4497.0+). If the command does not require any parameters,
+type the command into the prompt at the bottom of the Protocol Monitor panel and press Enter, for example, 
+<code>Page.captureScreenshot</code>. If the command requires parameters, provide them as JSON, for example,
+<code>{"command":"Page.captureScreenshot","parameters":{"format": "jpeg"}}</code>.
+
+<p>Alternatively, you can execute commands from the DevTools console. First, <a href="https://stackoverflow.com/a/12291163/89484">open devtools-on-devtools</a>,
 then within the inner DevTools window, use <code>Main.MainImpl.sendOverProtocol()</code> in the console:
 
-<pre>let Main = await import('./main/main.js');
+<pre>let Main = await import('./devtools-frontend/front_end/entrypoints/main/main.js'); // or './entrypoints/main/main.js' or './main/main.js' depending on the browser version
 await Main.MainImpl.sendOverProtocol('Emulation.setDeviceMetricsOverride', {
   mobile: true,
   width: 412,
@@ -118,9 +117,11 @@ await Main.MainImpl.sendOverProtocol('Emulation.setDeviceMetricsOverride', {
 
 const data = await Main.MainImpl.sendOverProtocol("Page.captureScreenshot");</pre>
 
+<p>Note that this method is basically reaching into internals of the DevTools source code and there is no guarantee that it'd continue to work as DevTools evolves.
+
 <h3 id="extension">DevTools protocol via Chrome extension</h3>
 <p>To allow chrome extensions to interact with the protocol, we introduced
-<a href="https://developer.chrome.com/extensions/debugger.html">chrome.debugger</a>
+<a href="https://developer.chrome.com/extensions/debugger/">chrome.debugger</a>
 extension API that exposes this JSON message
 transport interface. As a result, you can not only attach to the remotely
 running Chrome instance, but also instrument it from its own extension.
